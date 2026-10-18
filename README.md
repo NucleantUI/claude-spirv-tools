@@ -32,17 +32,11 @@ uv run scripts/build_spirv_tools.py && swift build -c release
 /plugin install spirv-tools@nucleantui-spirv
 ```
 
-Claude Code runs an installed plugin from a copy under `~/.claude/plugins/cache`.
-That copy may lack the clone's `.build`, so point the launchers at the clone's
-build in `~/.claude/settings.json`:
-
-```json
-{ "env": { "SPIRV_TOOLS_BUILD": "/path/to/claude-spirv-tools/.build/release" } }
-```
-
-`bin/spirv-mcp` and `bin/spirv-check` look in `$SPIRV_TOOLS_BUILD` first, then in
-the plugin's own `.build/release`. If neither has a build, the server prints the
-build command and exits, and the hook does nothing.
+A plugin from a marketplace added by local path runs in place, so it uses the
+clone's `.build/release` with nothing else to set up. `bin/spirv-mcp` and
+`bin/spirv-check` also look in `${CLAUDE_PLUGIN_DATA}/release`, where a copy
+installed from GitHub will keep release binaries. Without a build, the server
+prints the build command and exits, and the hook does nothing.
 
 ## Tools
 

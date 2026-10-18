@@ -1,13 +1,13 @@
 #!/bin/sh
-# Runs spirv-check's release build, from $SPIRV_TOOLS_BUILD or else this
-# package's .build/release. As the plugin's hook (--hook), a missing build
-# lets every edit through silently; on the command line it says how to build.
+# Runs spirv-check (the PostToolUse hook with --hook) from the release build:
+# the plugin folder's own .build/release (a plugin added from a local folder
+# runs in place, so that is the clone's build), or else
+# ${CLAUDE_PLUGIN_DATA}/release, where an installed copy keeps its binaries.
 root="$(cd "$(dirname "$0")/.." && pwd)"
-for dir in "$SPIRV_TOOLS_BUILD" "$root/.build/release"; do
+for dir in "$root/.build/release" "${CLAUDE_PLUGIN_DATA:+$CLAUDE_PLUGIN_DATA/release}"; do
     [ -n "$dir" ] && [ -x "$dir/spirv-check" ] && exec "$dir/spirv-check" "$@"
 done
 [ "$1" = "--hook" ] && exit 0
-echo "spirv-tools: spirv-check is not built. In a clone of github.com/NucleantUI/claude-spirv-tools run" >&2
-echo "  uv run scripts/build_spirv_tools.py && swift build -c release" >&2
-echo "and set SPIRV_TOOLS_BUILD to its .build/release." >&2
+echo "spirv-tools: spirv-check is not built. In the plugin folder run:" >&2
+echo "  cd \"$root\" && uv run scripts/build_spirv_tools.py && swift build -c release" >&2
 exit 1

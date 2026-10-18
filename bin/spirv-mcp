@@ -1,14 +1,12 @@
 #!/bin/sh
-# Starts the plugin's MCP server: the release build of spirv-mcp, from
-# $SPIRV_TOOLS_BUILD (a clone's .build/release, for an installed copy of the
-# plugin that has no build of its own) or else this package's .build/release.
-# It is not built here on startup (the first build compiles SPIRV-Tools from
-# source and takes minutes); a missing build says how.
+# Starts the plugin's MCP server, from the release build: the plugin folder's own
+# .build/release (a plugin added from a local folder runs in place, so that is
+# the clone's build), or else ${CLAUDE_PLUGIN_DATA}/release, where an
+# installed copy keeps its binaries.
 root="$(cd "$(dirname "$0")/.." && pwd)"
-for dir in "$SPIRV_TOOLS_BUILD" "$root/.build/release"; do
+for dir in "$root/.build/release" "${CLAUDE_PLUGIN_DATA:+$CLAUDE_PLUGIN_DATA/release}"; do
     [ -n "$dir" ] && [ -x "$dir/spirv-mcp" ] && exec "$dir/spirv-mcp" "$@"
 done
-echo "spirv-tools: spirv-mcp is not built. In a clone of github.com/NucleantUI/claude-spirv-tools run" >&2
-echo "  uv run scripts/build_spirv_tools.py && swift build -c release" >&2
-echo "and set SPIRV_TOOLS_BUILD to its .build/release." >&2
+echo "spirv-tools: spirv-mcp is not built. In the plugin folder run:" >&2
+echo "  cd \"$root\" && uv run scripts/build_spirv_tools.py && swift build -c release" >&2
 exit 1
