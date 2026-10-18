@@ -8,6 +8,7 @@
   "plugins": [
     {
       "name": "spirv-tools",
+      "version": "0.0.1",
       "description": "SPIR-V and PyShader debugging with SPIRV-Tools in process, errors at their Python lines",
       "source": "./",
       "category": "development"
