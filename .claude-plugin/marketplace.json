@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "nucleantui-spirv",
+  "description": "NucleantUI's SPIR-V tools for Claude Code",
+  "owner": {
+    "name": "NucleantUI"
+  },
+  "plugins": [
+    {
+      "name": "spirv-tools",
+      "description": "SPIR-V and PyShader debugging with SPIRV-Tools in process, errors at their Python lines",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

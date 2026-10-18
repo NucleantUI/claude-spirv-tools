@@ -4,8 +4,45 @@ A Claude Code plugin for working with SPIR-V and PyShader. Its tools run
 [SPIRV-Tools](https://github.com/KhronosGroup/SPIRV-Tools) in process, and they
 read PyShader's `OpLine`s, so errors and disassembly point at Python source.
 
-Work in progress. The MCP server and `spirv-check` work. The plugin manifest,
-`.mcp.json`, the skill and the PostToolUse hook are still to come.
+The plugin has three parts:
+
+- **The MCP server** `spirv` (`bin/spirv-mcp`), with the tools below.
+- **A PostToolUse hook.** After every Edit or Write to a PyShader shader, it
+  compiles the shader and validates the SPIR-V. Errors go back to Claude at
+  their Python lines.
+- **The skill** `spirv-debugging`, which covers when to use the tools and how to
+  read PyShader's SPIR-V.
+
+The server stops itself at 2 GB of memory. The hook stops at 1 GB or 20
+seconds, and when it does, it lets the edit through.
+
+## Install
+
+The binaries aren't released yet, so build them in your clone first (see
+[Building](#building)), then add the clone as a marketplace:
+
+```sh
+git clone https://github.com/NucleantUI/claude-spirv-tools
+cd claude-spirv-tools
+uv run scripts/build_spirv_tools.py && swift build -c release
+```
+
+```
+/plugin marketplace add /path/to/claude-spirv-tools
+/plugin install spirv-tools@nucleantui-spirv
+```
+
+Claude Code runs an installed plugin from a copy under `~/.claude/plugins/cache`.
+That copy may lack the clone's `.build`, so point the launchers at the clone's
+build in `~/.claude/settings.json`:
+
+```json
+{ "env": { "SPIRV_TOOLS_BUILD": "/path/to/claude-spirv-tools/.build/release" } }
+```
+
+`bin/spirv-mcp` and `bin/spirv-check` look in `$SPIRV_TOOLS_BUILD` first, then in
+the plugin's own `.build/release`. If neither has a build, the server prints the
+build command and exits, and the hook does nothing.
 
 ## Tools
 
@@ -37,7 +74,7 @@ Macs. The binary target, `Dependencies/CSpirvTools.xcframework`, comes from:
 
 ```sh
 uv run scripts/build_spirv_tools.py   # SPIRV-Tools + SPIRV-Headers vulkan-sdk-1.4.363.0, macOS arm64 + x86_64
-swift build
+swift build -c release   # bin/spirv-mcp and bin/spirv-check run the release build
 ```
 
 The script needs `cmake`, `ninja` and Xcode, and it builds macOS only for now.

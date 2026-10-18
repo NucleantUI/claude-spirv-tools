@@ -1,0 +1,17 @@
+{
+  "description": "Checks a PyShader shader after it is edited: compiles it and validates the SPIR-V, reporting errors at their Python lines",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/spirv-check\" --hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

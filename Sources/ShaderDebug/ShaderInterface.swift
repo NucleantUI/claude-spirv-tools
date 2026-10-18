@@ -70,7 +70,9 @@ extension DebugShader {
             }
         }
 
-        let resources = variables.filter { [.uniform, .uniformConstant, .storageBuffer].contains($0.storage) }
+        let resources = variables
+            .filter { [.uniform, .uniformConstant, .storageBuffer].contains($0.storage) }
+            .sorted { (decoration($0.id, .descriptorSet)?.first ?? 0, decoration($0.id, .binding)?.first ?? 0) < (decoration($1.id, .descriptorSet)?.first ?? 0, decoration($1.id, .binding)?.first ?? 0) }
         if !resources.isEmpty {
             out.append("Descriptors:")
             for v in resources {
@@ -156,7 +158,7 @@ struct TypeNamer {
             return "ptr<\(storage), \(name(o[2]))>"
         case .opTypeSampler: return "sampler"
         case .opTypeImage:
-            let dim = SpirvDim(rawValue: o[2]).map { "\($0)" } ?? "?"
+            let dim = SpirvDim(rawValue: o[2]).map { "\($0)".replacingOccurrences(of: "dim", with: "") } ?? "?"
             let storage = o.count > 6 && o[6] == 2 ? "storage image" : "image"
             return "\(storage) \(dim) of \(name(o[1]))"
         case .opTypeSampledImage: return "sampled \(name(o[1]))"

@@ -1,0 +1,11 @@
+{
+  "name": "spirv-tools",
+  "description": "SPIR-V and PyShader debugging: SPIRV-Tools in process (validate, disassemble, optimize, assemble), errors and disassembly at their Python lines, and a hook that checks PyShader files as they are edited",
+  "author": {
+    "name": "NucleantUI"
+  },
+  "homepage": "https://github.com/NucleantUI/claude-spirv-tools",
+  "repository": "https://github.com/NucleantUI/claude-spirv-tools",
+  "license": "MIT",
+  "keywords": ["spirv", "shaders", "pyshader", "vulkan"]
+}

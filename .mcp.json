@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "spirv": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/spirv-mcp"
+    }
+  }
+}

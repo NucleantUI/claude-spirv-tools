@@ -61,7 +61,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "spirv-mcp",
-            dependencies: ["SpirvMCP"]
+            dependencies: ["SpirvMCP", "ShaderDebug"]
         ),
         .executableTarget(
             name: "spirv-check",

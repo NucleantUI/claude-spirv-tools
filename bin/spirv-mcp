@@ -1,0 +1,14 @@
+#!/bin/sh
+# Starts the plugin's MCP server: the release build of spirv-mcp, from
+# $SPIRV_TOOLS_BUILD (a clone's .build/release, for an installed copy of the
+# plugin that has no build of its own) or else this package's .build/release.
+# It is not built here on startup (the first build compiles SPIRV-Tools from
+# source and takes minutes); a missing build says how.
+root="$(cd "$(dirname "$0")/.." && pwd)"
+for dir in "$SPIRV_TOOLS_BUILD" "$root/.build/release"; do
+    [ -n "$dir" ] && [ -x "$dir/spirv-mcp" ] && exec "$dir/spirv-mcp" "$@"
+done
+echo "spirv-tools: spirv-mcp is not built. In a clone of github.com/NucleantUI/claude-spirv-tools run" >&2
+echo "  uv run scripts/build_spirv_tools.py && swift build -c release" >&2
+echo "and set SPIRV_TOOLS_BUILD to its .build/release." >&2
+exit 1

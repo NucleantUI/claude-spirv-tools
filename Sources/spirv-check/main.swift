@@ -45,49 +45,6 @@ func check(_ url: URL, options: [CompileOptions], environment: SpirvTargetEnviro
     return ("\(firstError.map { "\($0)" } ?? "nothing to check")", false)
 }
 
-// MARK: pyshader.toml
-
-/// The target, content flag, arguments and site-packages pyshader.toml gives
-/// the shader at `url`, from the nearest one above it that lists it.
-func configured(_ url: URL) -> CompileOptions? {
-    var dir = url.deletingLastPathComponent()
-    while dir.path != "/" {
-        let toml = dir.appendingPathComponent("pyshader.toml")
-        if let text = try? String(contentsOf: toml, encoding: .utf8) {
-            var top: [String: String] = [:]
-            var sections: [[String: String]] = []
-            for raw in text.split(separator: "\n") {
-                let line = raw.split(separator: "#", maxSplits: 1, omittingEmptySubsequences: false).first.map(String.init)?
-                    .trimmingCharacters(in: .whitespaces) ?? ""
-                if line.hasPrefix("[") {
-                    sections.append([:])
-                } else if let eq = line.firstIndex(of: "=") {
-                    let key = line[..<eq].trimmingCharacters(in: .whitespaces)
-                    let value = line[line.index(after: eq)...].trimmingCharacters(in: .whitespaces)
-                    if sections.isEmpty { top[key] = value } else { sections[sections.count - 1][key] = value }
-                }
-            }
-            func unquote(_ s: String) -> String { s.trimmingCharacters(in: CharacterSet(charactersIn: "\"' ")) }
-            for section in sections {
-                guard let source = section["source"].map(unquote),
-                      dir.appendingPathComponent(source).standardizedFileURL.path == url.standardizedFileURL.path else { continue }
-                let arguments = section["arguments"].map {
-                    $0.trimmingCharacters(in: CharacterSet(charactersIn: "[]")).split(separator: ",").map { unquote(String($0)) }
-                        .filter { !$0.isEmpty }
-                } ?? []
-                return CompileOptions(
-                    target: section["target"].map(unquote) ?? "fragment",
-                    content: section["content"] == "true",
-                    arguments: arguments,
-                    sitePackages: top["site-packages"].map { dir.appendingPathComponent(unquote($0)) }
-                )
-            }
-        }
-        dir = dir.deletingLastPathComponent()
-    }
-    return nil
-}
-
 // MARK: Hook
 
 /// The hook's input: which tool ran, on which file.
@@ -113,7 +70,7 @@ func runHook() -> Never {
     } else {
         guard let source = try? String(contentsOf: url, encoding: .utf8),
               source.contains("from pyshader") || source.contains("import pyshader") else { exit(0) }
-        if let configured = configured(url) {
+        if let configured = PyShaderToml.options(for: url) {
             options = [configured]
         } else if source.contains("def vertex("), source.contains("def fragment(") {
             options = [CompileOptions(target: "graphics")]
@@ -132,6 +89,14 @@ func runHook() -> Never {
 // MARK: Command line
 
 var args = Array(CommandLine.arguments.dropFirst())
+// A hook runs on every edit, unattended: it gets less room, and a failure of
+// its own lets the edit through (exit 0) rather than blocking it.
+let limit = args == ["--hook"]
+    ? MemoryLimit(megabytes: 1024, seconds: 20) { reason in
+        FileHandle.standardError.write(Data("spirv-check: \(reason)\n".utf8))
+        exit(0)
+    }
+    : MemoryLimit(megabytes: 2048, seconds: 60)
 if args == ["--hook"] { runHook() }
 
 var options = CompileOptions()
