@@ -49,7 +49,7 @@ a PyShader `.py`, compiled with its Python lines kept, or a `.spv`.
 | `functions` | The module's functions: name, instruction count, and the Python line each one starts at. |
 | `disassemble` | The module, or one function, with each `OpLine` replaced by the Python line it marks. |
 | `interface` | Entry points and execution modes, inputs and outputs, descriptor bindings, and push constant and buffer block members by offset. |
-| `optimize` | Runs `spirv-opt` passes (default `-O`), then shows the sizes before and after, whether the result still validates, and the result's disassembly. |
+| `optimize` | Runs `spirv-opt` passes (default `-O`), then shows the sizes before and after, whether the result still validates, and the result's disassembly with its Python lines. |
 | `assemble` | Assembles SPIR-V text, for instance hand-edited disassembly, and validates it. |
 
 For a `.py`, a tool can also take `target` (`fragment`, `compute` or `graphics`),

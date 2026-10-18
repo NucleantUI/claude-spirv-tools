@@ -79,6 +79,12 @@ struct MCPServerTests {
         let optimized = try call("optimize", ["file": file, "function": "main"])
         #expect(optimized.text.hasPrefix("-O: "), "\(optimized.text)")
         #expect(optimized.text.contains("valid"))
+        // warm is inlined into main; its Python line still shows.
+        #expect(optimized.text.contains("; tint.py:5: return float3(0.2, 0.1, 0.0) * sin(t)"), "\(optimized.text)")
+        #expect(!optimized.text.contains("OpLine"))
+
+        let raw = try call("optimize", ["file": file, "function": "main", "python_lines": false])
+        #expect(raw.text.contains("OpLine"), "\(raw.text)")
     }
 
     @Test("errors come back as tool errors")

@@ -77,12 +77,13 @@ public final class DebugShader {
     public let module: SpirvModuleReader
     /// The file it was read or compiled from.
     public let file: URL?
+    /// Where the files its `OpLine`s name are looked up.
+    public let sourceRoots: [URL]
 
     /// The `OpLine` in effect at each instruction, by instruction index.
     private let lines: [(file: UInt32, line: Int)?]
     private let strings: [UInt32: String]
     private let names: [UInt32: String]
-    private let sourceRoots: [URL]
     private var sourceCache: [String: [Substring]?] = [:]
 
     /// A module as it is, its source files looked up in `sourceRoots`.

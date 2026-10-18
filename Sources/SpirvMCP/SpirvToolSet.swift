@@ -143,6 +143,7 @@ public final class SpirvToolSet {
             "flags": ["type": "array", "items": ["type": "string"],
                       "description": "spirv-opt flags: -O, -Os, --eliminate-dead-code-aggressive, --strip-debug, … Default [\"-O\"]."],
             "function": ["type": "string", "description": "Only disassemble this function."],
+            "python_lines": ["type": "boolean", "description": "Show Python lines in place of OpLine. Default true."],
             "output": ["type": "string", "description": "Where to write the optimized .spv."],
         ])
     ) { args in
@@ -151,9 +152,10 @@ public final class SpirvToolSet {
         let flags = args["flags"]?.strings ?? ["-O"]
         let optimized = try tools.optimize(shader.words, flags: flags)
         if let output = args["output"]?.string { try write(optimized, to: output) }
-        let result = try DebugShader(words: optimized, file: shader.file, sourceRoots: [])
+        let result = try DebugShader(words: optimized, file: shader.file, sourceRoots: shader.sourceRoots)
         let validity = result.validate(with: tools).map { "INVALID after optimizing: \($0)" } ?? "valid"
-        let text = try result.disassembly(with: tools, function: args["function"]?.string, pythonLines: false)
+        let text = try result.disassembly(with: tools, function: args["function"]?.string,
+                                          pythonLines: args["python_lines"]?.bool ?? true)
         return """
         \(flags.joined(separator: " ")): \(shader.words.count) -> \(optimized.count) words, \(validity)
 
