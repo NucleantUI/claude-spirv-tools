@@ -1,5 +1,5 @@
 {
-  "originHash" : "35b1b0fe21b582124a93c8867a80377fe1456efd1b050e2e71caba992fa972f4",
+  "originHash" : "bd40c4acaf6545951570cd664d09c58c285088957e55104f395d958e881c03f4",
   "pins" : [
     {
       "identity" : "pyshader",
@@ -25,6 +25,15 @@
       "location" : "https://github.com/NucleantUI/SpirvCore.git",
       "state" : {
         "revision" : "6208013087083579bb534cb0cd6ce1b581947233",
+        "version" : "0.0.1"
+      }
+    },
+    {
+      "identity" : "spirvtools",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/NucleantUI/SpirvTools.git",
+      "state" : {
+        "revision" : "9085077b196eccdf867f171f128b423808405e9f",
         "version" : "0.0.1"
       }
     }

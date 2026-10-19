@@ -8,5 +8,5 @@ for dir in "$root/.build/release" "${CLAUDE_PLUGIN_DATA:+$CLAUDE_PLUGIN_DATA/rel
     [ -n "$dir" ] && [ -x "$dir/spirv-mcp" ] && exec "$dir/spirv-mcp" "$@"
 done
 echo "spirv-tools: spirv-mcp is not built. In the plugin folder run:" >&2
-echo "  cd \"$root\" && uv run scripts/build_spirv_tools.py && swift build -c release" >&2
+echo "  cd \"$root\" && swift build -c release" >&2
 exit 1

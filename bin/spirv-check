@@ -9,5 +9,5 @@ for dir in "$root/.build/release" "${CLAUDE_PLUGIN_DATA:+$CLAUDE_PLUGIN_DATA/rel
 done
 [ "$1" = "--hook" ] && exit 0
 echo "spirv-tools: spirv-check is not built. In the plugin folder run:" >&2
-echo "  cd \"$root\" && uv run scripts/build_spirv_tools.py && swift build -c release" >&2
+echo "  cd \"$root\" && swift build -c release" >&2
 exit 1

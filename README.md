@@ -24,7 +24,7 @@ The binaries aren't released yet, so build them in your clone first (see
 ```sh
 git clone https://github.com/NucleantUI/claude-spirv-tools
 cd claude-spirv-tools
-uv run scripts/build_spirv_tools.py && swift build -c release
+swift build -c release
 ```
 
 ```
@@ -63,23 +63,18 @@ arguments in the nearest `pyshader.toml` that lists the shader.
 
 ## Building
 
-SPIRV-Tools is built from source, because Homebrew no longer builds it for Intel
-Macs. The binary target, `Dependencies/CSpirvTools.xcframework`, comes from:
-
 ```sh
-uv run scripts/build_spirv_tools.py   # SPIRV-Tools + SPIRV-Headers vulkan-sdk-1.4.363.0, macOS arm64 + x86_64
 swift build -c release   # bin/spirv-mcp and bin/spirv-check run the release build
 ```
 
-The script needs `cmake`, `ninja` and Xcode, and it builds macOS only for now.
-Releases will ship the xcframework as a release archive, the way NucleantVulkan
-ships its dependencies.
+SPIRV-Tools comes from the [SpirvTools](https://github.com/NucleantUI/SpirvTools)
+package, which PyShader's `pyshaderc --optimize` uses too. It is prebuilt for
+macOS (arm64 + x86_64), and SwiftPM downloads it with the package.
 
 ## Packages
 
 | Target | What it is |
 |---|---|
-| `SpirvTools` | Swift over SPIRV-Tools' C API: validate, disassemble, assemble, optimize. |
 | `ShaderDebug` | A module as a debugger sees it: compiled from PyShader or read from a `.spv`, its instructions tied to Python lines, its functions and interface. |
 | `SpirvMCP` | The MCP protocol (stdio JSON-RPC) and the tools above. |
 | `spirv-mcp`, `spirv-check` | The executables. |
@@ -87,5 +82,5 @@ ships its dependencies.
 ## License
 
 MIT; see [LICENSE](LICENSE). SPIRV-Tools is under the Apache 2.0 license, and
-SPIRV-Headers is under Khronos' MIT-style license. Both are built from source and
-are not part of this repository.
+SPIRV-Headers is under Khronos' MIT-style license. Neither is part of this
+repository; they come prebuilt with the SpirvTools package.

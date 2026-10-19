@@ -1,6 +1,4 @@
 .DS_Store
 /.build
 /.swiftpm
-/Dependencies
-/scripts/.work
 __pycache__/
